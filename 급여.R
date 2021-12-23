@@ -15,7 +15,7 @@ df_소득 |>
   facet_wrap(~key) + 
   labs(x = '연도', y = '급여(천원)') + 
   scale_y_continuous(labels = scales::comma)
-  
+
 
 
 +
