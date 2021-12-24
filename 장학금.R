@@ -99,3 +99,21 @@ df_univ |>
   summarise(대학 = sum(총계)/sum(재학생)
   )
 
+df_univ |>
+  filter(!(학교종류 %in% c('사이버대학(대학)', '방송통신대학'))) |>
+  #filter(상태 == '기존') |>
+  group_by(기준연도) |>
+  summarise(rate = sum(`재난 장학금`)/sum(재학생))
+
+
+df_col |>
+  filter(!(학교종류 %in% c('사이버대학(대학)', '방송통신대학'))) |>
+  #filter(상태 == '기존') |>
+  group_by(기준연도) |>
+  summarise(rate = sum(`재난 장학금`)/sum(재학생))
+
+df_col |>
+  filter(!(학교종류 %in% c('사이버대학(전문대학)', '방송통신대학'))) |>
+  #filter(상태 == '기존') |>
+  group_by(기준연도) |>
+  summarise(rate = sum(`재난 장학금`)/sum(재학생))
