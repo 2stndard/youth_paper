@@ -1,24 +1,41 @@
 library(readxl)
 library(tidyverse)
 library(showtext)
+library(forcats)
 showtext_auto()
+
+df_학자금 <- read.csv('clipboard', header = FALSE, sep = '\t')
 
 df_학자금 <- read_excel('./학자금대출합본.xlsx', col_names= TRUE, sheet = 'Sheet1',
                      col_type = c(rep('text', 8), rep('numeric', 9)))
 
 glimpse(df_학자금)
 
-df_학자금$기준연도 <- fct_relevel(df_학자금$기준연도, '2018', '2019', '2020', '2021')
+colnames(df_학자금) <- c('기준연도',	'구분',	'설립', '지역',	'상태', '학교명',	'학교구분',	'학기',	'재학생',	'일반상환_전체_인원',	'일반상환_전체_금액',	'일반상환_등록금_인원',	'일반상환_등록금_금액',	'취업후상환_전체_인원',	'취업후상환_전체_금액',	'취업후상환_등록금_인원',	'취업후상환_등록금_금액', 'col1', 'col2')
 
-df_학자금$학기 <- fct_reorder(df_학자금$학기, '1', '2')
+df_학자금$재학생 <- as.integer(df_학자금$재학생)
+
+df_학자금[, 9:19] <- apply(df_학자금[, 9:19], 2, function (x) {as.numeric(gsub(',', '', x))})
+
+
+df_학자금$기준연도 <- fct_relevel(as.character(df_학자금$기준연도), '2018', '2019', '2020', '2021')
+
+df_학자금$학기 <- fct_relevel(as.character(df_학자금$학기), '1', '2')
 
 df_학자금$지역 <- fct_relevel(df_학자금$지역, '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주')
 
+unique(df_학자금$기준연도)
+unique(df_학자금$재학생)
 
-df_학자금 <- df_학자금 |>
-  filter(구분 == '대학')
+
 
 df_학자금 |>
+  filter(학교구분 == '대학') |>
+  group_by(기준연도, 학기) |>
+  summarise(재학생_합계 = sum(재학생))
+            
+df_학자금 |>
+  filter(학교구분 == '대학') |>
   group_by(기준연도, 학기) |>
   summarise(재학생_합계 = sum(재학생), 
             일반상환_전체_수혜자수 = sum(일반상환_전체_인원), 
@@ -36,15 +53,22 @@ df_학자금 |>
             
 ########################################################################
 
+df_학자금_전문대 <- read.csv('clipboard', header = FALSE, sep = '\t')
+
 
 df_학자금_전문대 <- read_excel('./학자금대출합본_전문대.xlsx', col_names= TRUE, sheet = 'Sheet1',
                      col_type = c(rep('text', 7), rep('numeric', 9)))
 
-glimpse(df_학자금)
+colnames(df_학자금_전문대) <- c('기준연도',	'구분',	'설립', '지역',	'상태', '학교명',	'학기',	'재학생',	'일반상환_전체_인원',	'일반상환_전체_금액',	'일반상환_등록금_인원',	'일반상환_등록금_금액',	'취업후상환_전체_인원',	'취업후상환_전체_금액',	'취업후상환_등록금_인원',	'취업후상환_등록금_금액', 'col1', 'col2')
 
-df_학자금_전문대$기준연도 <- fct_relevel(df_학자금_전문대$기준연도, '2018', '2019', '2020', '2021')
+df_학자금_전문대[, 8:18] <- apply(df_학자금_전문대[, 8:18], 2, function (x) {as.numeric(gsub(',', '', x))})
 
-df_학자금_전문대$학기 <- fct_reorder(df_학자금_전문대$학기, '1', '2')
+
+glimpse(df_학자금_전문대)
+
+df_학자금_전문대$기준연도 <- fct_relevel(as.character(df_학자금_전문대$기준연도), '2018', '2019', '2020', '2021')
+
+df_학자금_전문대$학기 <- fct_relevel(as.character(df_학자금_전문대$학기), '1', '2')
 
 
 df_학자금_전문대$지역 <- fct_relevel(df_학자금_전문대$지역, '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주')
